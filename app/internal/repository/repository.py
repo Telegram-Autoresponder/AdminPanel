@@ -11,6 +11,7 @@ BaseRepository = TypeVar("BaseRepository", bound="Repository")
 
 
 class Repository(ABC):
+
     """Base repository interface.
 
     All repositories must implement this interface.

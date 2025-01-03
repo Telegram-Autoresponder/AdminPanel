@@ -1,4 +1,4 @@
 """Business models."""
 # ruff: noqa
 
-from app.pkg.models.app import city
+from app.pkg.models import app

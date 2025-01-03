@@ -2,13 +2,13 @@
 
 from dependency_injector import containers, providers
 
-from app.pkg.connectors.postgresql.resource import Postgresql
+from app.pkg.connectors.postgresql.resource import Sqlalchemy
 from app.pkg.settings import settings
 
-__all__ = ["PostgresSQL"]
+__all__ = ["SqlAlchemy"]
 
 
-class PostgresSQL(containers.DeclarativeContainer):
+class SqlAlchemy(containers.DeclarativeContainer):
     """Declarative container with PostgresSQL connector."""
 
     configuration = providers.Configuration(
@@ -16,9 +16,7 @@ class PostgresSQL(containers.DeclarativeContainer):
         pydantic_settings=[settings],
     )
 
-    connector = providers.Resource(
-        Postgresql,
-        dsn=configuration.POSTGRES.DSN,
-        minsize=configuration.POSTGRES.MIN_CONNECTION,
-        maxsize=configuration.POSTGRES.MAX_CONNECTION,
+    connector = providers.Factory(
+        Sqlalchemy,
+        dsn=settings.POSTGRES_ADMIN.get_alchemy_dsn(),
     )

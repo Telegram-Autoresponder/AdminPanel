@@ -3,12 +3,15 @@
 All resources should be inherited from :class:`.BaseAsyncResource`.
 """
 
-from abc import abstractmethod
+from abc import abstractmethod, ABC
 from typing import TypeVar
 
 from dependency_injector import resources
 
-__all__ = ["BaseAsyncResource"]
+__all__ = [
+    "BaseAsyncResource",
+    "BaseResource",
+]
 
 
 _T = TypeVar("_T")
@@ -76,3 +79,20 @@ class BaseAsyncResource(resources.AsyncResource):
         Notes:
             You should implement ``close`` method of your connector here.
         """
+
+
+class BaseResource(ABC):
+
+    @abstractmethod
+    def __init__(
+        self,
+        *args,
+        **kwargs,
+    ):
+        """Startup resource."""
+        pass
+
+    @abstractmethod
+    def shutdown(self):
+        """Close resource."""
+    pass

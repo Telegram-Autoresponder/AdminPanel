@@ -66,10 +66,10 @@ class WiredContainer(dict, metaclass=SingletonMeta):
             ::
 
                 >>> from app import __containers__
-                >>> from app.pkg.connectors import PostgresSQL
+                >>> from app.pkg.connectors import SqlAlchemy
 
                 >>> __containers__.wire_packages(pkg_name=__name__)
-                >>> __containers__.wired_containers[PostgresSQL]
+                >>> __containers__.wired_containers[SqlAlchemy]
 
         Returns:
             Container instance.

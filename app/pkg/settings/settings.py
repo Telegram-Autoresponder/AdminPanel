@@ -2,9 +2,9 @@
 `dev` from `.env.dev`"""
 from functools import lru_cache
 
+import pydantic
 from dotenv import find_dotenv
-from pydantic import PostgresDsn 
-from pydantic_settings import BaseSettings 
+from pydantic_settings import BaseSettings
 
 
 
@@ -56,15 +56,30 @@ class _Settings(BaseSettings):
         env_nested_delimiter = "__"
 
 
+class Postgresql(_Settings):
+    HOST: str
+    PORT: int
+    USER: str
+    PASSWORD: pydantic.StrictStr
+    DATABASE: str
+    SCHEMA: str
+    DRIVER: str = "asyncpg"
+
+    def get_alchemy_dsn(self) -> str:
+        return f"{self.SCHEMA}+{self.DRIVER}://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}"
+
+    def get_migration_dsn(self) -> str:
+        return f"{self.SCHEMA}+psycopg2://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}"
+
 class Settings(_Settings):
     """Server settings.
 
     Formed from `.env` or `.env.dev` if server running with parameter
     `dev`.
     """
+    POSTGRES_ADMIN: Postgresql
 
-# TODO: Возможно даже lru_cache не стоит использовать. Стоит использовать meta sigleton.
-#   Для класса настроек. А инициализацию перенести в `def __init__`
+
 @lru_cache
 def get_settings(env_file: str = ".env") -> Settings:
     """Create settings instance."""
