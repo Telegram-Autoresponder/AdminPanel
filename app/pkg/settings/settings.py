@@ -50,6 +50,8 @@ class _Settings(BaseSettings):
         env_file_encoding = "utf-8"
         #: str: allow custom fields in model.
         arbitrary_types_allowed = True
+        #: Literal['allow', 'ignore', 'forbid'] ignore extra
+        extra = "ignore"
         #: bool: case-sensitive for env variables.
         case_sensitive = True
         #: str: delimiter for nested env variables.
@@ -70,6 +72,7 @@ class Postgresql(_Settings):
 
     def get_migration_dsn(self) -> str:
         return f"{self.SCHEMA}+psycopg2://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}"
+
 
 class Settings(_Settings):
     """Server settings.
