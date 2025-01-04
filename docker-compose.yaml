@@ -1,3 +1,5 @@
+version: "3.3"
+
 services:
   api:
     container_name: ${ADMIN_API_CONTAINER_NAME}
@@ -16,6 +18,7 @@ services:
     ]
     networks:
       - postgres_network
+
   migrations:
     container_name: migration_${ADMIN_API_CONTAINER_NAME}
     build:
