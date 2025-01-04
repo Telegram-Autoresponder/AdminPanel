@@ -28,4 +28,4 @@ services:
       - .env
     command: ["alembic", "upgrade", "head"]
     networks:
-      - postgres_network
+      - bridge
