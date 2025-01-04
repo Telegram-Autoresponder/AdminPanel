@@ -16,8 +16,6 @@ services:
       "--host", "0.0.0.0",
       "--port", '5000',
     ]
-    networks:
-      - bridge
 
   migrations:
     container_name: migration_${ADMIN_API_CONTAINER_NAME}
@@ -27,5 +25,4 @@ services:
     env_file:
       - .env
     command: ["alembic", "upgrade", "head"]
-    networks:
-      - bridge
+
