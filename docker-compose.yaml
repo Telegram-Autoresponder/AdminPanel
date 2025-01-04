@@ -17,7 +17,7 @@ services:
       "--port", '5000',
     ]
     networks:
-      - postgres_network
+      - bridge
 
   migrations:
     container_name: migration_${ADMIN_API_CONTAINER_NAME}
