@@ -1,16 +1,35 @@
 """Async resource for PostgresSQL connector."""
 
-import aiopg
 
-from app.pkg.connectors.resources import BaseAsyncResource
+from sqlalchemy.ext.asyncio import AsyncEngine, create_async_engine, AsyncSession
+from sqlalchemy.orm import sessionmaker
+from app.pkg.connectors import resources
 
-__all__ = ["Postgresql"]
+__all__ = ["Sqlalchemy"]
 
 
-class Postgresql(BaseAsyncResource):
+class Sqlalchemy(resources.BaseResource):
+
     """PostgresSQL connector using aiopg."""
+    __engine: AsyncEngine = None
+    __session: sessionmaker = None
+    dsn: str
 
-    async def init(self, dsn: str, *args, **kwargs) -> aiopg.Pool:
+    def get_engine(self) -> AsyncEngine:
+        if self.__engine is None:
+            self.__engine = create_async_engine(url=self.dsn)
+        return self.__engine
+
+    def get_session(self) -> sessionmaker:
+        if self.__session is None:
+            self.__session = sessionmaker(
+                bind=self.get_engine(),
+                class_=AsyncSession,
+                expire_on_commit=False,
+            )
+        return self.__session
+
+    def __init__(self, dsn: str):
         """Getting connection pool in asynchronous.
 
         Args:
@@ -19,10 +38,9 @@ class Postgresql(BaseAsyncResource):
         Returns:
             Created connection pool.
         """
+        self.dsn = dsn
 
-        return await aiopg.create_pool(dsn=dsn, *args, **kwargs)
-
-    async def shutdown(self, resource: aiopg.Pool):
+    async def shutdown(self):
         """Close connection.
 
         Args:
@@ -34,6 +52,4 @@ class Postgresql(BaseAsyncResource):
             or
             ``Closing`` provider is used.
         """
-
-        resource.close()
-        await resource.wait_closed()
+        await self.__engine.dispose()

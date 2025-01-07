@@ -1,5 +1,7 @@
 """``on_startup`` function will be called when server trying to start."""
+import asyncio
 
+from app.internal.bot.bot import TgBot
 
 async def on_startup() -> None:
     """Run code on server startup.
@@ -11,6 +13,8 @@ async def on_startup() -> None:
     Returns:
         None
     """
+    bot = TgBot()
+    asyncio.create_task(bot.startup_bot())
 
 
 async def on_shutdown() -> None:
@@ -20,3 +24,4 @@ async def on_shutdown() -> None:
     Returns:
         None
     """
+

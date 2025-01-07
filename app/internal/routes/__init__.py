@@ -9,6 +9,9 @@ Examples:
         >>> __routes__.register_routes(app=app)
 """
 from app.pkg.models.core.routes import Routes
+from app.internal.routes import (
+    user
+)
 
 __all__ = [
     "__routes__",
@@ -16,6 +19,6 @@ __all__ = [
 
 __routes__ = Routes(
     routers=(
-        city.router,
+        user.router,
     ),
 )

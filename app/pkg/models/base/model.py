@@ -138,7 +138,7 @@ class BaseModel(pydantic.BaseModel):
         elif isinstance(v, Dict) and v:
             return self.to_dict(show_secrets=show_secrets, values=v, **kwargs)
 
-        elif isinstance(v, (UUID, UUID4)):
+        elif isinstance(v, UUID):
             return str(v)
 
         elif isinstance(v, datetime):
