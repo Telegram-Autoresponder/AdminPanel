@@ -1,6 +1,7 @@
 import aiogram
 import asyncio
 from app.internal.bot.button import auth
+from app.internal.bot.command import admin_command
 
 
 class TgBot:
@@ -22,7 +23,8 @@ class TgBot:
 		if self.__dispatcher is None:
 			self.__dispatcher = aiogram.Dispatcher()
 			self.__dispatcher.include_routers(
-				auth.router,
+
+				admin_command.router,
 			)
 		return self.__dispatcher
 
