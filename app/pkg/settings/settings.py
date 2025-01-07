@@ -74,6 +74,10 @@ class Postgresql(_Settings):
         return f"{self.SCHEMA}+psycopg2://{self.USER}:{self.PASSWORD}@{self.HOST}:{self.PORT}/{self.DATABASE}"
 
 
+class Telegram(_Settings):
+
+    API_BOT_TOKEN: str
+
 class Settings(_Settings):
     """Server settings.
 
@@ -81,6 +85,7 @@ class Settings(_Settings):
     `dev`.
     """
     POSTGRES_ADMIN: Postgresql
+    TELEGRAM: Telegram
 
 
 @lru_cache
