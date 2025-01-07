@@ -8,7 +8,7 @@ __all__ = [
 router = aiogram.Router(name="auth-router")
 
 
-@router.message(Command(commands=['auth']))
+@router.message(Command(commands=['auth'])) # /auth
 async def auth_handler(message: Message) -> None:
     """
     This handler receives messages with /auth command
@@ -28,13 +28,14 @@ async def auth_handler(message: Message) -> None:
     else:
         await message.answer('Ошибка: введенный текст не является числом.')
 
-# def process_test(test_text: str) -> int:
-#     try:
-#         # Пытаемся преобразовать текст в число
-#         number = float(test_text)
-#         # Умножаем число на 4
-#         result = number * 4
-#         return result
-#     except ValueError:
-#         # Если преобразование не удалось, возвращаем None
-#         return None
+def process_test(test_text: str) -> int:
+    try:
+        # Пытаемся преобразовать текст в число
+        number = float(test_text)
+        # Умножаем число на 4
+        result = number * 4
+        return result
+    except ValueError:
+        # Если преобразование не удалось, возвращаем None
+        return None
+
