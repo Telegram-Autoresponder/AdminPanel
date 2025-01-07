@@ -1,13 +1,11 @@
 """Create connection to postgresql."""
 
 from contextlib import asynccontextmanager
-from typing import Optional, Union
-
-from aiopg import Pool
-from aiopg.pool import Cursor
+from typing import Union
 from dependency_injector.wiring import Provide, inject
-from psycopg2.extensions import cursor  # type: ignore
-from psycopg2.extras import RealDictCursor  # type: ignore
+from sqlalchemy.ext.asyncio import AsyncSession, AsyncEngine
+from sqlalchemy.orm import sessionmaker
+from app.pkg.connectors.postgresql.resource import Sqlalchemy
 
 from app.pkg.connectors import Connectors
 
@@ -17,16 +15,20 @@ __all__ = ["get_connection", "acquire_connection"]
 @asynccontextmanager
 @inject
 async def get_connection(
-    pool: Pool = Provide[Connectors.postgresql.connector],
-    return_pool: bool = False,
-) -> Union[Cursor, Pool]:
+    engine: Sqlalchemy = Provide[Connectors.postgresql.connector],
+    returned_engine: bool = False,
+    returned_session: bool = False,
+) -> Union[AsyncEngine, AsyncSession]:
     """Get async connection pool to postgresql.
 
     Args:
-        pool:
-            postgresql connection pool.
-        return_pool:
-            if True, return pool, else return connection.
+        engine:
+            Sqlalchimy angine.
+        returned_engine:
+            if True, return engine.
+        returned_session:
+            if True, return sessionmaker
+
 
     Examples:
         If you have a function that contains a query in postgresql,
@@ -42,29 +44,26 @@ async def get_connection(
         Async connection to postgresql.
     """
 
-    if not isinstance(pool, Pool):
-        pool = await pool
-
-    if return_pool:
-        yield pool
+    if returned_engine:
+        yield engine.get_engine()
         return
-
-    async with acquire_connection(pool=pool, cursor_factory=None) as cur:
-        yield cur
+    if returned_session:
+        yield engine.get_session()
+    print(type(engine))
+    print(type(engine.get_session()))
+    async with acquire_connection(session=engine.get_session()) as session:
+        yield session
 
 
 @asynccontextmanager
 async def acquire_connection(
-    pool: Pool,
-    cursor_factory: Optional[cursor] = None,
-) -> Cursor:
+    session: sessionmaker,
+) -> AsyncSession:
     """Acquire connection from pool.
 
     Args:
-        pool:
-            Getings from :func:`.get_connection` postgresql pool.
-        cursor_factory:
-            cursor factory.
+        session:
+            Getings from :func:`.get_connection` sqlalchemy session.
 
     Examples:
         If you have a function that contains a query in postgresql,
@@ -84,9 +83,5 @@ async def acquire_connection(
         Async connection to postgresql.
     """
 
-    if cursor_factory is None:
-        cursor_factory = RealDictCursor
-
-    async with pool.acquire() as conn:
-        acquire_cursor = await conn.cursor(cursor_factory=cursor_factory)
-        yield acquire_cursor
+    async with session() as s:
+        yield s
